@@ -13,26 +13,28 @@ import com.pdharam.tendable.R
 import com.pdharam.tendable.databinding.ActivityMainBinding
 import com.pdharam.tendable.network.ApiResult
 import com.pdharam.tendable.ui.dashboard.DashboardActivity
-import com.pdharam.tendable.ui.login.model.LoginResponse
+import com.pdharam.tendable.util.SharedPreferenceUtil
 import mahindra.supplier.tpm.utils.UIUtils
 
 class LoginActivity : AppCompatActivity(), View.OnClickListener {
     private lateinit var binding: ActivityMainBinding
     private lateinit var loginViewModel: LoginViewModel
-    private lateinit var observerLoginApiResponse: Observer<ApiResult<LoginResponse>>
+    private lateinit var observerLoginApiResponse: Observer<ApiResult<Unit>>
+    private lateinit var sharedPreferenceUtil: SharedPreferenceUtil
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        loginViewModel = ViewModelProvider(this)[LoginViewModel::class.java]
         initState()
-//        checkSession()
+        checkSession()
         setListener()
 
 
     }
 
     private fun initState() {
+        loginViewModel = ViewModelProvider(this)[LoginViewModel::class.java]
+        sharedPreferenceUtil = SharedPreferenceUtil()
         observerLoginApiResponse = Observer {
             UIUtils.hideProgress()
             when (it) {
@@ -43,13 +45,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                         .setOKClickListener(object : CustomAlertDialog.OKlistener {
                             override fun onClick(dialog: CustomAlertDialog) {
                                 dialog.dismiss()
-                                startActivity(
-                                    Intent(
-                                        this@LoginActivity,
-                                        DashboardActivity::class.java
-                                    )
-                                )
-                                finish()
+                                openDashboard()
                             }
                         })
                         .show(supportFragmentManager, "")
@@ -70,6 +66,22 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+    private fun checkSession() {
+        if (sharedPreferenceUtil.checkUserLogin()) {
+            openDashboard()
+        }
+    }
+
+    private fun openDashboard() {
+        startActivity(
+            Intent(
+                this@LoginActivity,
+                DashboardActivity::class.java
+            )
+        )
+        finish()
+    }
+
     private fun setListener() {
         binding.btnLogin.setOnClickListener(this);
     }
@@ -82,7 +94,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                     loginViewModel.login(
                         binding.edtEmail.text.toString(),
                         binding.edtPassword.text.toString()
-                    )
+                    ).observe(this, observerLoginApiResponse)
                 }
             }
         }

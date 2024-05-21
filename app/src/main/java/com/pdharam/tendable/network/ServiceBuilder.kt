@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object ServiceBuilder {
     //BASE URL
-    private val BASE_URL: String = "http://127.0.0.1:5001/api/"
+    private val BASE_URL: String = "http://10.0.2.2:5001/api/"
 
     //CREATE OK HTTP CLIENT
     private val okHttpClient =

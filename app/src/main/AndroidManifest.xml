@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
+        android:name=".root.TendableApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -17,6 +18,12 @@
         android:theme="@style/Theme.Tendable"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <activity
+            android:name=".ui.saved_inspection_list.SavedInspectionListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.inspection.InspectionActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.dashboard.DashboardActivity"
             android:exported="false" />
